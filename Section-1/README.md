@@ -117,3 +117,7 @@ El server-side-rendering:
 - Deben estar capitalizados. "Navbar.tsx" 
 
 
+
+## Layouts
+
+Reciben un children y sirven para cuando tenemos varias secciones en nuestra aplicacion y queremos que se repitan en todas las paginas.

@@ -4,15 +4,15 @@ import Link from "next/link";
 
 export default function HomePage() {
   return (
-    <MainLayout title="Home">
-      <h1>Home Page</h1>
+    <MainLayout title="Pricing">
+      <h1>Pricing Page</h1>
       <h1 className={'title'}>
-        Ir a <Link href="/about">About</Link>{" "}
+        Ir a <Link href="/">Home</Link>{" "}
       </h1>
       <div className={'description'}>
         <p>
           Get started by editing&nbsp;
-          <code className={'code'}>pages/index.tsx</code>
+          <code className={'code'}>pages/pricing/index.tsx</code>
         </p>
       </div>
     </MainLayout>

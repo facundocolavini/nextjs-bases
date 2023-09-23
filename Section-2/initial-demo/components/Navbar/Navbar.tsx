@@ -8,7 +8,7 @@ interface NavbarItem {
 }
 const Navbar = () => {
   return (
-    <nav className={styles['menu-conteiner']}>
+    <nav className={styles['menu-container']}>
       {
        menuItems.map(({text,href}: NavbarItem ) => {
         return <ActiveLink key={href} text={text} hrefPath={href}/>

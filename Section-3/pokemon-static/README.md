@@ -32,3 +32,41 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+
+
+## GetStaticProps
+Utilizamos getStaticProps siempre y cuando sepamos que  los parametros que se van a utilizar en la pagina.
+
+Cuando generamos una pagina antes cuando el cliente hace el request y se genera en el servidor y en el request se envia la pagina ya construida.
+
+Se getStaticProps se ejecuta del lado del servidor en el build time.
+
+Solo se utiliza en las Pages de Next.js
+
+props: esta funcion retorna un objeto con las props que se van a pasar al componente y se pueden ver en el cliente.
+
+getStaticProps: se utiliza para generar las props de las paginas que se van a generar de forma estatica.
+
+Cuando generamos el build de produccion no se vuelve a ejecutar getStaticProps.
+
+## getStaticPaths Static site generation para paginas que tienen armgumentos dinamicos
+Podemos utilizar getStaticPaths si estamos de manera estatica pre renderizando las paginas que utilizan argumentos dinamicos.
+
+Cuando se tiene una pagina que se va a generar de forma estatica pero con argumentos se utiliza getStaticPaths
+
+getStaticPaths: Retorna un objeto con las rutas que se van a generar de forma estatica.
+
+paths : es un array de objetos que tienen la propiedad params que es un objeto con los argumentos que se van a utilizar en la pagina.
+
+fallback: es un booleano que indica si se va a generar una pagina de forma estatica o no. Puede tener 3 valores.
+
+false: si la pagina no existe se va a mostrar un 404
+true: si la pagina no existe se va a generar de forma dinamica  
+blocking: si la pagina no existe se va a generar de forma dinamica pero el usuario no va a poder ver la pagina hasta que se genere.
+
+Cuando se termina de ejecutar getStaticPaths se ejecuta getStaticProps y podemos utilizar los argumentos que se generaron en getStaticPaths.
+
+ctx : es un objeto que tiene la propiedad params que es un objeto con los argumentos que se van a utilizar en la pagina.
+
+getStaticPaths se ejecuta en el servidor en el build time.En desarrollo se ejecuta en cada request.

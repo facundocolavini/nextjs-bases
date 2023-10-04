@@ -1,20 +1,39 @@
 import { Button, Card, Container, Grid, Image, Text } from "@nextui-org/react";
+import confetti from "canvas-confetti";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { pokeApi } from "../../api";
 import { Layout } from "../../components/layouts";
-import { Pokemon } from "../../interfaces";
+import { Pokemon, PokemonListResponse } from "../../interfaces";
+
+import { useState } from "react";
+import { getPokemonInfo, localFavorites } from "../../utils";
 
 interface Props {
   pokemon: Pokemon;
 }
 
-const PokemonPage: NextPage<Props> = ({ pokemon }) => {
+const PokemonByNamePage: NextPage<Props> = ({ pokemon }) => {
+  const [isInFavorite, setIsInFavorite] = useState(
+    localFavorites.isFavorite(pokemon.id)
+  );
   const onToggleFavorite = () => {
-    console.log("onToggleFavorite",pokemon.id);
-    localStorage.setItem("favorite",`${pokemon.id}`)
-  }
+    localFavorites.toggleFavorite(pokemon.id);
+    setIsInFavorite(!isInFavorite);
+    if (isInFavorite) return;
+    confetti({
+      zIndex: 999,
+      particleCount: 100,
+      spread: 100,
+      angle: -100,
+      origin: {
+        y: 0,
+        x: 1,
+      },
+    });
+  };
+
   return (
-    <Layout title="Pokemon Page">
+    <Layout title={pokemon.name}>
       <Grid.Container css={{ marginTop: "5px" }} gap={2}>
         <Grid xs={12} sm={4}>
           <Card>
@@ -37,8 +56,12 @@ const PokemonPage: NextPage<Props> = ({ pokemon }) => {
               <Text h1 transform="capitalize">
                 {pokemon.name}
               </Text>
-              <Button color="gradient" ghost onClick={onToggleFavorite}>
-                Guardar en favoritos
+              <Button
+                color="gradient"
+                ghost={!isInFavorite}
+                onClick={onToggleFavorite}
+              >
+                {isInFavorite ? "En favoritos" : "Guardar en favoritos"}
               </Button>
             </Card.Header>
             <Card.Body>
@@ -78,23 +101,27 @@ const PokemonPage: NextPage<Props> = ({ pokemon }) => {
     </Layout>
   );
 };
-export default PokemonPage;
+export default PokemonByNamePage;
 
 // Static site generation con argumentos
 export const getStaticPaths: GetStaticPaths = async (ctx) => {
-  const pokemons151 = [...Array(151)].map((value, i) => `${i + 1}`); // Array de 151 elementos
+  const { data } = await pokeApi.get<PokemonListResponse>("/pokemon?limit=151");
 
   return {
-    paths: pokemons151.map((id) => ({ params: { id } })),
+    paths: data.results.map((pokemon) => ({
+      params: {
+        name: pokemon.name,
+      },
+    })),
     fallback: false,
   };
 };
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const { id } = params as { id: string };
-  const { data } = await pokeApi.get<Pokemon>(`/pokemon/${id}`);
+  const { name } = params as { name: string };
+  const pokeInfo = await getPokemonInfo(name);
   return {
     props: {
-      pokemon: data,
+      pokemon: pokeInfo
     },
   };
 };

@@ -6,5 +6,4 @@ interface ContextProps {
     entries: Entry[];
 }
 
-
 export const EntriesContext = createContext({} as ContextProps );

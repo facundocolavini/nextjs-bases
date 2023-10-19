@@ -7,3 +7,4 @@ interface ContextProps {
 }
 
 export const EntriesContext = createContext({} as ContextProps );
+

@@ -1,6 +1,6 @@
 import { Entry } from "@/interfaces";
-import { FC, useReducer } from "react";
-import { v4 as uuidV4 } from "uuid";
+import { FC, useEffect, useReducer } from "react";
+import { entriesApi } from "../../../apis";
 import { EntriesContext, entriesReducer } from "./";
 
 export interface EntriesState {
@@ -8,26 +8,7 @@ export interface EntriesState {
 }
 
 const Entries_INITIAL_STATE: EntriesState = {
-  entries: [
-    {
-      _id: uuidV4(),
-      description: "Pendientes: Description 1",
-      status: "pending",
-      createdAt: Date.now(),
-    },
-    {
-      _id: uuidV4(),
-      description: "En-Progreso: Description 2",
-      status: "in-progress",
-      createdAt: Date.now() - 1000000,
-    },
-    {
-      _id: uuidV4(),
-      description: "Terminadas:Description 3",
-      status: "finished",
-      createdAt: Date.now() - 100000,
-    },
-  ],
+  entries: [],
 };
 
 export interface EntriesProviderProps {
@@ -37,26 +18,31 @@ export interface EntriesProviderProps {
 export const EntriesProvider: FC<EntriesProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(entriesReducer, Entries_INITIAL_STATE);
 
-  const addNewEntry = (description: string) => {
-    const newEntry: Entry = {
-      _id: uuidV4(),
-      description,
-      createdAt: Date.now(),
-      status: "pending",
-    };
-    dispatch({type:"[Entry] Add-Entry", payload: newEntry});
+  const addNewEntry = async(description: string) => {
+    const { data } = await entriesApi.post<Entry>("/entries", { description });
+
+    dispatch({ type: "[Entry] Add-Entry", payload: data });
   };
-   
+
   const updateEntry = (entry: Entry) => {
-    dispatch({type:"[Entry] Entry-Updated", payload: entry});
-  }
+    dispatch({ type: "[Entry] Entry-Updated", payload: entry });
+  };
+
+  const refreshEntries = async () => {
+    const { data } = await entriesApi.get<Entry[]>("/entries");
+    dispatch({ type: "[Entry] Refresh-Data", payload: data });
+  };
+
+  useEffect(() => {
+    refreshEntries();
+  }, []);
 
   return (
     <EntriesContext.Provider
       value={{
         ...state,
         addNewEntry,
-        updateEntry
+        updateEntry,
       }}
     >
       {children}

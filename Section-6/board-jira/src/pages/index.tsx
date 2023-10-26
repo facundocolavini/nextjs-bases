@@ -6,6 +6,7 @@ import { Inter } from "next/font/google";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function HomePage() {
+  
   return (
     <Layout title="Home - Board Jira">
       <Grid container spacing={2}>

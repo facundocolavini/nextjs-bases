@@ -1,7 +1,8 @@
-import { Layout } from "@/components/layouts";
-import { EntryList, NewEntry } from "@/components/ui";
+
 import { Card, CardHeader, Grid } from "@mui/material";
 import { Inter } from "next/font/google";
+import { EntryList, NewEntry } from "../components/ui";
+import { Layout } from "../components/layouts";
 
 const inter = Inter({ subsets: ["latin"] });
 

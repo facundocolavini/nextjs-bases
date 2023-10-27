@@ -1,4 +1,5 @@
-import { Entry } from "@/interfaces";
+
+import { Entry } from "../../interfaces";
 import { EntriesState } from "./";
 
 type EntriesActionType =

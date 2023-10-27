@@ -1,4 +1,4 @@
-import { UIContext } from "@/context/ui";
+
 import AllInboxOutlinedIcon from "@mui/icons-material/AllInboxOutlined";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import {
@@ -12,6 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useContext } from "react";
+import { UIContext } from "../../context/ui";
 const menuItems = ["Inbox", "Mails"];
 
 export const Sidebar = () => {

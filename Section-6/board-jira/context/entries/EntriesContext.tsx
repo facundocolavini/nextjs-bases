@@ -1,5 +1,6 @@
-import { Entry } from '@/interfaces';
+
 import { createContext } from 'react';
+import { Entry } from '../../interfaces';
 
 
 interface ContextProps {

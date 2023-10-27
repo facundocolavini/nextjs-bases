@@ -1,15 +1,15 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import mongoose from "mongoose";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { db } from "../../../../database";
-import { Entry, IEntry } from "../../../../models";
+import { Entry, IEntry } from "../../../models";
+import { db } from "../../../database";
+
 
 type Data =
   | {
       message: string;
     }
   | IEntry;
-
 
 export default async function handler(
   req: NextApiRequest,
@@ -19,13 +19,15 @@ export default async function handler(
 
   if (!mongoose.isValidObjectId(id)) {
     return res.status(400).json({
-      message: "El Id no es invalido" + id,
+      message: "El Id no es valido" + id,
     });
   }
 
   switch (req.method) {
     case "PUT":
       return updateEntry(req, res);
+    case "GET":
+      return getEntry(req, res);
     default:
       return res.status(400).json({
         message: "Metodo no soportado",
@@ -47,12 +49,32 @@ const updateEntry = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     description = entryToUpdate.description,
     status = entryToUpdate.status,
   } = req.body;
-
-  const updatedEntry = await Entry.findByIdAndUpdate(id, {
-    description,
-    status,
+  try {
+    const updatedEntry = await Entry.findByIdAndUpdate(
+      id,
+      {
+        description,
+        status,
+      },
+      { runValidators: true, new: true }
+    ); // Para que corra las validaciones del modelo y nos devuelva el objeto actualizado
+    res.status(200).json(updatedEntry!);
+  } catch (error: any) {
+    await db.disconnect();
+    res.status(400).json({ message: error.errors.status.message });
   }
-  ,{runValidators: true , new:true}) // Para que corra las validaciones del modelo y nos devuelva el objeto actualizado
+};
+
+const getEntry = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
+  const { id } = req.query;
   
-  res.status(200).json(updatedEntry!);
+  await db.connectDB();
+  const entry = await Entry.findById(id);
+  await db.disconnect();
+
+  if (!entry) {
+    return res.status(404).json({ message: "No se encontro la entrada" + id });
+  }
+
+  return res.status(200).json(entry);
 };

@@ -4,26 +4,26 @@
 - yarn add mongoose
 **/
 
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
 /**
  * 0 = disconnected
  * 1 = connected
  * 2 = connecting
  * 3 = disconnecting
  **/
-const mongooConnection = {
+const mongoConnection = {
   isConnected: 0,
 };
 
 export const connectDB = async () => {
-  if (mongooConnection.isConnected) {
+  if (mongoConnection.isConnected) {
     console.log("Already connected");
     return;
   }
   // Si hay alguna conexion abierta, la cerramos
   if (mongoose.connections.length > 0) {
-    mongooConnection.isConnected = mongoose.connections[0].readyState;
-    if (mongooConnection.isConnected === 1) {
+    mongoConnection.isConnected = mongoose.connections[0].readyState;
+    if (mongoConnection.isConnected === 1) {
       console.log("Use previous connection");
       return;
     }
@@ -32,14 +32,20 @@ export const connectDB = async () => {
   }
 
   await mongoose.connect(process.env.MONGO_URL || '');
-  mongooConnection.isConnected = 1;
+  mongoConnection.isConnected = 1;
   console.log("Connected to  mongo DB", process.env.MONGO_URL )
 };
 
 // Cerramos la conexion
 export const disconnect = async () => {
   if(process.env.NODE_ENV === 'development') return; // Evitar desconecciones en desarrollo
-  if (mongooConnection.isConnected === 0) return;
+  if (mongoConnection.isConnected === 0) return;
   await mongoose.disconnect();
+  mongoConnection.isConnected = 0;
   console.log("Disconnected from mongo DB");
+};
+
+export const  db = {	
+  connectDB,
+  disconnect,
 };

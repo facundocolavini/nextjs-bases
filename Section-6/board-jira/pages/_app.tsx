@@ -7,9 +7,11 @@ import type { AppProps } from "next/app";
 import { EntriesProvider } from "../context/entries";
 import { UIProvider } from "../context/ui";
 import { darkTheme } from "../themes";
+import { SnackbarProvider } from "notistack";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
+    <SnackbarProvider maxSnack={3}>
     <EntriesProvider>
       <UIProvider>
         <ThemeProvider theme={darkTheme}>
@@ -18,5 +20,6 @@ export default function App({ Component, pageProps }: AppProps) {
         </ThemeProvider>
       </UIProvider>
     </EntriesProvider>
+    </SnackbarProvider>
   );
 }

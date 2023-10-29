@@ -1,9 +1,8 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import mongoose from "mongoose";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { Entry, IEntry } from "../../../models";
 import { db } from "../../../database";
-
+import { Entry, IEntry } from "../../../models";
 
 type Data =
   | {
@@ -28,6 +27,8 @@ export default async function handler(
       return updateEntry(req, res);
     case "GET":
       return getEntry(req, res);
+    case "DELETE":
+      return deleteEntry(req, res);
     default:
       return res.status(400).json({
         message: "Metodo no soportado",
@@ -67,9 +68,23 @@ const updateEntry = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
 
 const getEntry = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const { id } = req.query;
-  
+
   await db.connectDB();
   const entry = await Entry.findById(id);
+  await db.disconnect();
+
+  if (!entry) {
+    return res.status(404).json({ message: "No se encontro la entrada" + id });
+  }
+
+  return res.status(200).json(entry);
+};
+
+const deleteEntry = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
+  const { id } = req.query;
+
+  await db.connectDB();
+  const entry = await Entry.findByIdAndDelete(id);
   await db.disconnect();
 
   if (!entry) {
